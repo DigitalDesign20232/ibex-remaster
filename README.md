@@ -21,6 +21,7 @@ A remastered version of Ibex processor with some customizations.
 ## Table of Contents
 
 - [Description](#description)
+- [Quick Start](#quick-start)
 - [Ibex Demo System](ibex-demo-system/README.md)
 
 ## Description
@@ -28,3 +29,15 @@ A remastered version of Ibex processor with some customizations.
 This project serves as the final exam for our Digital Design Course, organized by EDABK Lab.
 
 Our goal is to reimplement and enhance the original Ibex core - a vital component of the lowRISC ecosystem. Through meticulous design and optimization, we aim to create a refined processor core with our own features.
+
+## Quick Start
+
+Clone the repository with `git`
+
+```bash
+  # For example: Ubuntu - Clone using SSH
+  git clone git@github.com:DigitalDesign20232/ibex-remaster.git
+
+  # For example: Windows - Clone using https
+  # git clone https://github.com/DigitalDesign20232/ibex-remaster.git
+```
