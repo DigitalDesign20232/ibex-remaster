@@ -17,3 +17,7 @@
 # Ibex Remaster
 
 A remastered version of Ibex processor with some customizations
+
+## Table of Contents
+
+- [Ibex Demo System](ibex-demo-system/README.md)
