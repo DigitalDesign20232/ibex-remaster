@@ -32,12 +32,20 @@ Our goal is to reimplement and enhance the original Ibex core - a vital componen
 
 ## Quick Start
 
-Clone the repository with `git`
+1. Clone the repository with `git`
 
 ```bash
   # For example: Ubuntu - Clone using SSH
   git clone git@github.com:DigitalDesign20232/ibex-remaster.git
+  cd ibex-remaster
 
   # For example: Windows - Clone using https
   # git clone https://github.com/DigitalDesign20232/ibex-remaster.git
+  # cd ibex-remaster
+```
+
+2. Create Vivado project
+
+```bash
+  make create_vivado_project
 ```
