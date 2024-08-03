@@ -12,6 +12,7 @@ set board_part "xilinx.com:zcu104:part0:1.1"
 
 # Create the project
 create_project $project_name $project_dir/$project_name -part $part
+set_property DESIGN_MODE RTL [current_fileset]
 
 # Set the target board
 set_property board_part $board_part [current_project]
