@@ -17,12 +17,14 @@ filesets:
       - rtl/fpga/top_artya7.sv
     file_type: systemVerilogSource
 
-  files_xilinx_zcu104:
+  files_zcu104:
     depend:
       - lowrisc:ibex:rv_timer
       - lowrisc:ibex:fpga_xilinx_shared
     files:
       - rtl/fpga/top_zcu104.sv
+      - rtl/fpga/clkgen_sonata.sv
+      - rtl/fpga/rst_ctrl.sv
     file_type: systemVerilogSource
 
 
