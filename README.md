@@ -43,9 +43,3 @@ Our goal is to reimplement and enhance the original Ibex core - a vital componen
   # git clone https://github.com/DigitalDesign20232/ibex-remaster.git
   # cd ibex-remaster
 ```
-
-2. Create Vivado project
-
-```bash
-  make create_vivado_project
-```
