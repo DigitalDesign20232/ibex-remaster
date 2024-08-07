@@ -132,12 +132,12 @@ targets:
       - PRIM_DEFAULT_IMPL=prim_pkg::ImplXilinx
     flags:
       use_bscane_tap: true
-      
+
   synth_zcu104:
     <<: *default_target
     default_tool: vivado
     filesets_append:
-      - files_xilinx_zcu104
+      - files_zcu104
       - files_constraints_zcu104
     toplevel: top_zcu104
     tools:
