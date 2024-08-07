@@ -2,66 +2,99 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-// This is the top level SystemVerilog file that connects the IO on the board to the Ibex Demo System.
-module top_zcu104 #(
-  parameter SRAMInitFile = ""
-) (
-  // These inputs are defined in data/pins_artya7.xdc
-  input         IO_CLK,
-  input         IO_RST_N,
-  input  [ 3:0] SW,
-  input  [ 3:0] BTN,
-  output [ 3:0] LED,
-  output [11:0] RGB_LED,
-  output [ 3:0] DISP_CTRL,
-  input         UART_RX,
-  output        UART_TX,
-  input         SPI_RX,
-  output        SPI_TX,
-  output        SPI_SCK,
-  input         pad_jtag_tms,
-  input         pad_jtag_tdi,
-  output        pad_jtag_tdo,
-  input         pad_jtag_tck
+// Ibex demo system top level for the Sonata board
+module top_zcu104 (
+  input              main_clk,
+  input              nrst_btn,
+
+  output logic [7:0] led_user,
+  output logic       led_bootok,
+  output logic       led_halted,
+  output logic       led_cheri,
+  output logic       led_legacy,
+  output logic [8:0] led_cherierr,
+
+  input  logic [4:0] nav_sw,
+  input  logic [7:0] user_sw,
+
+  output logic lcd_rst,
+  output logic lcd_dc,
+  output logic lcd_copi,
+  output logic lcd_clk,
+  output logic lcd_cs,
+  output logic lcd_backlight,
+
+  output logic ser0_tx,
+  input  logic ser0_rx,
+
+  input  logic tck_i,
+  input  logic tms_i,
+  input  logic td_i,
+  output logic td_o
 );
+  parameter SRAMInitFile = "";
 
-  logic clk_sys, rst_sys_n;
+  logic mainclk_buf;
+  logic clk_sys;
+  logic rst_sys_n;
+  logic [7:0] reset_counter;
 
-  // Instantiating the Ibex Demo System.
+  logic [4:0] nav_sw_n;
+  logic [7:0] user_sw_n;
+
+  logic pll_locked;
+  logic rst_btn;
+
+
+  assign led_bootok = rst_sys_n;
+
+  // Switch inputs have pull-ups and switches pull to ground when on. Invert here so CPU sees 1 for
+  // on and 0 for off.
+  assign nav_sw_n = ~nav_sw;
+  assign user_sw_n = ~user_sw;
+
   ibex_demo_system #(
-    .GpiWidth     ( 8            ),
-    .GpoWidth     ( 8            ),
-    .PwmWidth     ( 12           ),
-    .SRAMInitFile ( SRAMInitFile )
+    .GpiWidth(13),
+    .GpoWidth(12),
+    .PwmWidth(12),
+    .SRAMInitFile(SRAMInitFile)
   ) u_ibex_demo_system (
-    //input
-    .clk_sys_i (clk_sys),
+    .clk_sys_i(clk_sys),
     .rst_sys_ni(rst_sys_n),
-    .gp_i      ({SW, BTN}),
-    .uart_rx_i (UART_RX),
 
-    //output
-    .gp_o     ({LED, DISP_CTRL}),
-    .pwm_o    (RGB_LED),
-    .uart_tx_o(UART_TX),
+    .gp_i({user_sw_n, nav_sw_n}),
+    .gp_o({led_user, lcd_backlight, lcd_dc, lcd_rst, lcd_cs}),
 
-    .spi_rx_i (SPI_RX),
-    .spi_tx_o (SPI_TX),
-    .spi_sck_o(SPI_SCK),
+    .uart_rx_i(ser0_rx),
+    .uart_tx_o(ser0_tx),
 
-    .trst_ni(1'b1),
-    .tms_i  (pad_jtag_tms),
-    .tck_i  (pad_jtag_tck),
-    .td_i   (pad_jtag_tdi),
-    .td_o   (pad_jtag_tdo)
+    .pwm_o({led_cherierr, led_legacy, led_cheri, led_halted}),
+
+    .spi_rx_i(1'b0),
+    .spi_tx_o(lcd_copi),
+    .spi_sck_o(lcd_clk),
+
+    .trst_ni(rst_sys_n),
+    .tms_i,
+    .tck_i,
+    .td_i,
+    .td_o
   );
 
-  // Generating the system clock and reset for the FPGA.
-  clkgen_xil7series clkgen(
-    .IO_CLK,
-    .IO_RST_N,
+  // Produce 50 MHz system clock from 25 MHz Sonata board clock
+  clkgen_sonata clkgen(
+    .IO_CLK(main_clk),
+    .IO_CLK_BUF(mainclk_buf),
     .clk_sys,
-    .rst_sys_n
+    .locked(pll_locked)
   );
 
+  assign rst_btn = ~nrst_btn;
+
+  rst_ctrl u_rst_ctrl (
+    .clk_i       (mainclk_buf),
+    .pll_locked_i(pll_locked),
+    .rst_btn_i   (rst_btn),
+    .rst_no      (rst_sys_n)
+  );
 endmodule
